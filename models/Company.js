@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const StudentModel = new mongoose.Schema({
+const CompanyModel = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -13,20 +13,11 @@ const StudentModel = new mongoose.Schema({
         type: String,
         required: true,
     },
-    degree: {
+    bio: {
         type: String,
-        required: true,
-    },
-    year: {
-        type: Number,
-        required: true,
     },
     imgUrl: String,
-    resumeUrl: String,
     portfolio: String,
-    achievements: String,
-    skills: [],
-    academics: [],
     socials: [
         {
             name: { type: String, required: true },
@@ -34,7 +25,10 @@ const StudentModel = new mongoose.Schema({
         },
     ],
     isVerified: Boolean,
-    joinedDate: { type: Date, default: Date.now() },
+    joinedDate: {
+        type: Date,
+        default: Date.now(),
+    },
 });
 
-module.exports = mongoose.model("Student", StudentModel);
+module.exports = mongoose.model("Company", CompanyModel);
