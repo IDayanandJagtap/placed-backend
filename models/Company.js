@@ -1,27 +1,20 @@
 const mongoose = require("mongoose");
 
 const CompanyModel = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    bio: {
-        type: String,
-    },
+    name: String,
+
+    email: String,
+
+    password: String,
+
+    bio: String,
+
     imgUrl: String,
     portfolio: String,
     socials: [
         {
-            name: { type: String, required: true },
-            value: { type: String, required: true },
+            name: String,
+            value: String,
         },
     ],
     isVerified: Boolean,

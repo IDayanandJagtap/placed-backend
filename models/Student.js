@@ -1,26 +1,12 @@
 const mongoose = require("mongoose");
 
+// We cannot have required fields because for signup we will only get partial values.
 const StudentModel = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    degree: {
-        type: String,
-        required: true,
-    },
-    year: {
-        type: Number,
-        required: true,
-    },
+    name: String,
+    email: String,
+    password: String,
+    degree: String,
+    year: Number,
     imgUrl: String,
     resumeUrl: String,
     portfolio: String,
@@ -29,8 +15,8 @@ const StudentModel = new mongoose.Schema({
     academics: [],
     socials: [
         {
-            name: { type: String, required: true },
-            value: { type: String, required: true },
+            name: { type: String },
+            value: { type: String },
         },
     ],
     isVerified: Boolean,

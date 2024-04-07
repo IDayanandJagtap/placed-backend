@@ -1,0 +1,77 @@
+// prompt 1 : to get just the info in json format
+
+Consider yourself a chemical expert as a chemical enthusiast I want to get some detailed information from the data that I'll be providing. I'm providing you a msds of a chemical at the end of this prompt, I want you to scan it extensively. It contains multiple section but I only need the data from section 9 which is it's physical and chemical properties. The output should be in the json format ... for example {"physicalState": "solid", "odour" : "odourless"}
+The data to scan is in backticks ``
+
+
+// prompt 2 : to get info in same json structure for any kind of msds
+
+Consider yourself a chemical expert, as a chemical enthusiast I want to get some detailed information from the data that I'll be providing. I'm providing you a msds of a chemical at the end of this prompt, I want you to scan it extensively. It contains multiple section but I only need the data from section 9 which is it's physical and chemical properties. The output should be in the json format. I want the data to be scaned properly and insert it into this template : 
+{
+  "physicalState": "",
+  "appearance": "",
+  "odor": "",
+  "ph": "",
+  "meltingPoint": {
+    "value": "",
+    "type": "" 
+  },
+  "boilingPoint": {
+    "value": "",
+    "type": "",
+    "pressure": ""
+  },
+  "flashPoint": "",
+  "evaporationRate": "",
+  "flammability": {
+    "solid": "",
+    "gas": "",
+    "limits": {
+      "upper": "",
+      "lower": ""
+    }
+  },
+  "vaporPressure": "",
+  "vaporDensity": "",
+  "specificGravity": "",
+  "solubility": "",
+  "partitionCoefficient": {
+    "n-octanol/water": ""
+  },
+  "autoignitionTemperature": "",
+  "decompositionTemperature": "",
+  "viscosity": {
+    "kinematic": "",
+    "dynamic": ""
+  },
+  "molecularFormula": "",
+  "molecularWeight": ""
+}
+
+If you are unable to find any field please assign "null" to it.
+The data to scan is in backticks ``
+
+
+
+
+
+
+
+
+
+
+
+// prompt 3 : get all info
+
+Consider yourself a chemical expert, as a chemical enthusiast I want to get some detailed information from the data that I'll be providing. I'm providing you a msds of a chemical at the end of this prompt, I want you to scan it extensively. It contains multiple section. The output should be in the json format. create an array whose each element is a json object which contains extensive info about the respective section.
+The data to scan is :  ``
+
+
+
+
+
+
+
+
+
+

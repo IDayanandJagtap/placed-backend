@@ -22,3 +22,5 @@ const JobsModel = new mongoose.Schema({
     },
     appliedStudents: [],
 });
+
+module.exports = mongoose.model("Job", JobsModel);
