@@ -25,11 +25,12 @@ const loginFieldValidation = [
 router.post("/signup", signupFieldValidation, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors);
         res.status(400).json({ success: false, error: errors.array() });
         return;
     }
     try {
-        const { name, email, password, userType } = req.body;
+        const { email, password, userType } = req.body;
 
         // check if user already exists;
         const User = userType.toLowerCase() === "student" ? Student : Company;
@@ -47,23 +48,34 @@ router.post("/signup", signupFieldValidation, async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         let newUser = await User.create({
-            name,
             email,
             password: hashedPassword,
+            name: "",
+            year: "",
+            degree: "",
+            skills: [],
+            resumeUrl: "",
+            achievements: "",
+            academics: Array(6).fill(0),
+            contact: { github: "", linkedin: "", twitter: "" },
         });
 
         if (!newUser) throw new Error("Failed to signup");
 
-        // Generate JWT and send the response
+        // Generate JWT, set cookie and send the response
         const tokenData = {
             user: { id: newUser.id },
         };
         const token = jwt.sign(tokenData, JWT_SECRET, { expiresIn: "3d" });
+        res.cookie("token", token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+        });
 
         res.status(201).json({
             success: true,
             msg: "User created successfully",
-            token: token,
+            data: { userName: "", userEmail: email, userType: userType },
         });
     } catch (e) {
         console.log("Signup Failed : ", e);
@@ -107,10 +119,14 @@ router.post("/login", loginFieldValidation, async (req, res) => {
         // Generate jwt
         const tokenData = { user: { id: user.id } };
         const token = jwt.sign(tokenData, JWT_SECRET, { expiresIn: "3d" });
+        res.cookie("token", token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+        });
         res.status(200).json({
             success: true,
             msg: "Logged in successfully",
-            token: token,
+            data: { userName: user.name, userEmail: email, userType: userType },
         });
     } catch (error) {
         console.log("Login Failed : ", error);

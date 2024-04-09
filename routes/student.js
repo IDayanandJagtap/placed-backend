@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 require("dotenv").config();
 const multer = require("multer");
-const path = require("node:path");
 const upload = multer({ dest: "uploads/" });
 const fs = require("node:fs/promises");
 const Student = require("../models/Student");
 const Job = require("../models/Jobs");
+const verifyUser = require("../middleware/verifyUser");
 
 //! Get all students :
 router.get("/students/getall", async (req, res) => {
@@ -28,7 +28,22 @@ router.get("/students/getall", async (req, res) => {
     }
 });
 
-//! Get a single student
+//! Get student info (for the logged in student)
+router.get("/students/getme", verifyUser, async (req, res) => {
+    try {
+        const students = await Student.findById(req.user.id);
+
+        if (!students) {
+            throw new Error("Unable to load student data");
+        }
+
+        res.status(200).json({ success: true, data: students });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+//! Get a single student (for other user type)
 router.get("/students/getone/:id", async (req, res) => {
     const studId = req.params.id;
 
@@ -51,80 +66,100 @@ router.get("/students/getone/:id", async (req, res) => {
 //! Update student
 // add a middleware to check whether the student is valid
 // also add validations for other text fields
-router.post("/students/update", upload.array("files", 2), async (req, res) => {
-    try {
-        // get images ... store them for a while and then move them to public/image & public/resume folder
-        // save them with the name as the _id of that student
-        const studentImage = req.files[0];
-        const studentResume = req.files[1];
+router.post(
+    "/students/update",
+    verifyUser,
+    upload.array("files", 2),
+    async (req, res) => {
+        try {
+            // get images ... store them for a while and then move them to public/image & public/resume folder
+            // save them with the name as the _id of that student
+            const studentImage = req.files[0];
+            const studentResume = req.files[1];
 
-        const {
-            id,
-            name,
-            degree,
-            year,
-            portfolio,
-            achievements,
-            skills,
-            academics,
-            socials,
-        } = req.body;
+            const {
+                name,
+                degree,
+                year,
+                portfolio,
+                achievements,
+                skills,
+                phone,
+                academics,
+                contact,
+            } = JSON.parse(req.body.textData);
 
-        const isStudent = await Student.findById(id);
+            const { id } = req.user;
 
-        if (!isStudent) {
-            return res
-                .status(400)
-                .json({ success: false, error: "User doesn't exits" });
+            const isStudent = await Student.findById(id);
+
+            if (!isStudent) {
+                return res
+                    .status(400)
+                    .json({ success: false, error: "User doesn't exist" });
+            }
+
+            const updatedStudent = {
+                name,
+                degree,
+                year,
+                portfolio,
+                phone,
+                achievements,
+                skills,
+                academics,
+                contact,
+            };
+
+            if (studentImage) {
+                // rename and move the files
+                const imageExtension = studentImage.originalname
+                    .split(".")
+                    .pop();
+
+                const newImageLocation =
+                    "student/images/" + id + "." + imageExtension;
+
+                await fs.rename(
+                    "uploads/" + studentImage.filename,
+                    "public/" + newImageLocation
+                ); // because we have to save the link which serves static files ie. host/student/...
+
+                updatedStudent.imgUrl =
+                    process.env.HOST_LINK + newImageLocation;
+            }
+            if (studentResume) {
+                const resumeExtension = studentResume.originalname
+                    .split(".")
+                    .pop();
+                const newResumeLocation =
+                    "student/resume/" + id + "." + resumeExtension;
+
+                await fs.rename(
+                    "uploads/" + studentResume.filename,
+                    "public/" + newResumeLocation
+                );
+                updatedStudent.resumeUrl =
+                    process.env.HOST_LINK + newResumeLocation;
+            }
+
+            //  Find and update the student
+
+            const student = await Student.findOneAndUpdate(
+                { _id: id },
+                updatedStudent,
+                { new: true }
+            );
+
+            // console.log(student);
+            // student updated ... send the response
+            res.status(200).json({ success: true, data: student });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ success: false, error: err.message });
         }
-
-        // rename and move the files
-        const imageExtension = studentImage.originalname.split(".").pop();
-        const resumeExtension = studentResume.originalname.split(".").pop();
-        const newImageLocation = "student/images/" + id + "." + imageExtension;
-
-        const newResumeLocation =
-            "student/resume/" + id + "." + resumeExtension;
-
-        await fs.rename(
-            "uploads/" + studentImage.filename,
-            "public/" + newImageLocation
-        ); // because we have to save the link which serves static files ie. host/student/...
-        await fs.rename(
-            "uploads/" + studentResume.filename,
-            "public/" + newResumeLocation
-        );
-
-        console.log(process.env.HOST_LINK + newImageLocation);
-
-        // create a object find it and update
-        const updatedStudent = {
-            name,
-            degree,
-            year,
-            portfolio,
-            achievements,
-            skills,
-            academics,
-            socials,
-            imgUrl: process.env.HOST_LINK + newImageLocation,
-            resumeUrl: process.env.HOST_LINK + newResumeLocation,
-            email: isStudent.email,
-            password: isStudent.password,
-        };
-        const student = await Student.findOneAndUpdate(
-            { _id: id },
-            updatedStudent,
-            { new: true }
-        );
-
-        // student updated ... send the response
-        res.status(200).json({ success: true, data: student });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false, error: err.message });
     }
-});
+);
 
 //! Apply to a job
 router.post("/students/apply", async (req, res) => {

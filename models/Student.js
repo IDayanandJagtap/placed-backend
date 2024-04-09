@@ -6,19 +6,15 @@ const StudentModel = new mongoose.Schema({
     email: String,
     password: String,
     degree: String,
-    year: Number,
+    year: String,
     imgUrl: String,
     resumeUrl: String,
     portfolio: String,
     achievements: String,
+    phone: String,
     skills: [],
     academics: [],
-    socials: [
-        {
-            name: { type: String },
-            value: { type: String },
-        },
-    ],
+    contact: {},
     isVerified: Boolean,
     joinedDate: { type: Date, default: Date.now() },
 });
