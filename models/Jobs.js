@@ -9,18 +9,25 @@ const JobsModel = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Company",
     },
+    companyName: String,
+    type: String,
     description: {
         type: String,
         required: true,
     },
     skills: [String],
-    salaryRange: [],
+    salaryRange: {},
     isOpen: Boolean,
     postedDate: {
         type: Date,
         default: Date.now(),
     },
-    appliedStudents: [],
+    appliedStudents: [
+        {
+            id: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+            description: String,
+        },
+    ],
 });
 
 module.exports = mongoose.model("Job", JobsModel);

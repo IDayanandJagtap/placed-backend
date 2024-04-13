@@ -72,7 +72,7 @@ router.post("/signup", signupFieldValidation, async (req, res) => {
             httpOnly: true,
         });
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             msg: "User created successfully",
             data: { userName: "", userEmail: email, userType: userType },
@@ -123,10 +123,15 @@ router.post("/login", loginFieldValidation, async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,
         });
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             msg: "Logged in successfully",
-            data: { userName: user.name, userEmail: email, userType: userType },
+            data: {
+                id: user._id,
+                userName: user.name,
+                userEmail: email,
+                userType: userType,
+            },
         });
     } catch (error) {
         console.log("Login Failed : ", error);

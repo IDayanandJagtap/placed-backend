@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const CompanyModel = new mongoose.Schema({
     name: String,
-
+    tagline: String,
     email: String,
 
     password: String,
@@ -11,12 +11,8 @@ const CompanyModel = new mongoose.Schema({
 
     imgUrl: String,
     portfolio: String,
-    socials: [
-        {
-            name: String,
-            value: String,
-        },
-    ],
+    contact: {},
+
     isVerified: Boolean,
     joinedDate: {
         type: Date,

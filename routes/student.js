@@ -31,13 +31,18 @@ router.get("/students/getall", async (req, res) => {
 //! Get student info (for the logged in student)
 router.get("/students/getme", verifyUser, async (req, res) => {
     try {
-        const students = await Student.findById(req.user.id);
+        const student = await Student.findById(req.user.id);
+        console.log(req.user.id);
+        console.log(student);
 
-        if (!students) {
-            throw new Error("Unable to load student data");
+        if (!student) {
+            return res.status(400).json({
+                success: false,
+                error: "Unauthorised user",
+            });
         }
 
-        res.status(200).json({ success: true, data: students });
+        res.status(200).json({ success: true, data: student });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
@@ -162,9 +167,10 @@ router.post(
 );
 
 //! Apply to a job
-router.post("/students/apply", async (req, res) => {
+router.post("/students/apply", verifyUser, async (req, res) => {
     try {
-        const { id, jobId, description } = req.body;
+        const { jobId, description } = req.body;
+        const studentId = req.user.id;
 
         const job = await Job.findById(jobId);
         if (!job) {
@@ -173,9 +179,20 @@ router.post("/students/apply", async (req, res) => {
                 .json({ success: false, error: "Job id not valid" });
         }
 
+        // check if already applied :
+        for (let i = 0; i < job.appliedStudents.length; i++) {
+            if (job.appliedStudents[i].id == studentId) {
+                return res.status(200).json({
+                    success: false,
+                    error: "You have already applied to this job!",
+                });
+            }
+        }
+
+        // if not then apply now
         const appliedStudents = [
             ...job.appliedStudents,
-            { id: id, description: description },
+            { id: studentId, description: description },
         ];
 
         const updatedJob = await Job.findOneAndUpdate(
