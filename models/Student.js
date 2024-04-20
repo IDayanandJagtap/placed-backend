@@ -15,7 +15,7 @@ const StudentModel = new mongoose.Schema({
     skills: [],
     academics: [],
     contact: {},
-    isVerified: Boolean,
+    isVerified: { type: Boolean, default: false },
     joinedDate: { type: Date, default: Date.now() },
 });
 

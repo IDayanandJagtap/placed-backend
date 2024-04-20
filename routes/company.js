@@ -125,7 +125,7 @@ router.post(
                 { new: true }
             );
 
-            // student updated ... send the response
+            // company updated ... send the response
             res.status(200).json({ success: true, data: company });
         } catch (err) {
             console.log(err);

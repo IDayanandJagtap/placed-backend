@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const Student = require("../models/Student");
 const Company = require("../models/Company");
 const jwt = require("jsonwebtoken");
+const Admin = require("../models/Admin");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const signupFieldValidation = [
@@ -96,7 +97,12 @@ router.post("/login", loginFieldValidation, async (req, res) => {
     const { email, password, userType } = req.body;
 
     try {
-        const User = userType.toLowerCase() === "student" ? Student : Company;
+        const User =
+            userType.toLowerCase() === "student"
+                ? Student
+                : userType.toLowerCase() === "company"
+                ? Company
+                : Admin;
 
         // Find the user
         const user = await User.findOne({ email: email });

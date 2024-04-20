@@ -13,7 +13,10 @@ const CompanyModel = new mongoose.Schema({
     portfolio: String,
     contact: {},
 
-    isVerified: Boolean,
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
     joinedDate: {
         type: Date,
         default: Date.now(),

@@ -18,6 +18,7 @@ app.use("/auth", require("./routes/auth"));
 app.use("/api", require("./routes/student"));
 app.use("/api", require("./routes/company"));
 app.use("/api", require("./routes/jobs"));
+app.use("/api/admin", require("./routes/admin"));
 
 app.get("/", async (req, res) => {
     res.send("Hellooo , Welcome to coding world");
