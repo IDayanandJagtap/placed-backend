@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@blogin.qxgxfni.mongodb.net/?retryWrites=true&w=majority`;
+
 const connectToDb = async () => {
     mongoose
-        .connect(process.env.MONGODB_URI)
+        .connect(process.env.MONGO_PASS)
         .then((value) => {
             console.log("Connected to Db");
         })
